@@ -17,6 +17,24 @@
             background: #0a0a0a;
             color: #e0e0e0;
             overflow-x: hidden;
+            cursor: default;
+        }
+        /* Terminal Cursor Effect */
+        .cursor-effect {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ff006e;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.1s, width 0.3s, height 0.3s;
+            mix-blend-mode: difference;
+        }
+        .cursor-effect.expand {
+            width: 40px;
+            height: 40px;
+            border-color: #8338ec;
         }
         /* HK Logo Animation */
         .hk-logo {
@@ -27,10 +45,33 @@
             background-clip: text;
             font-weight: 700;
             animation: glow 2s ease-in-out infinite alternate;
+            position: relative;
+            display: inline-block;
+        }
+        .hk-logo::after {
+            content: '█';
+            animation: blink 1s infinite;
+            color: #ff006e;
+            margin-left: 2px;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
         }
         @keyframes glow {
             from { filter: drop-shadow(0 0 10px #ff006e); }
             to { filter: drop-shadow(0 0 20px #8338ec); }
+        }
+        /* Matrix Rain Effect */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+            z-index: -1;
         }
         /* Header */
         header {
@@ -41,6 +82,11 @@
             backdrop-filter: blur(20px);
             z-index: 1000;
             padding: 1rem 0;
+            transition: all 0.3s;
+        }
+        header.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         nav {
             max-width: 1200px;
@@ -61,6 +107,7 @@
             font-weight: 500;
             position: relative;
             transition: color 0.3s;
+            padding: 0.5rem 0;
         }
         .nav-links a:hover {
             color: #ff006e;
@@ -68,7 +115,7 @@
         .nav-links a::after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: 0;
             left: 0;
             width: 0;
             height: 2px;
@@ -112,11 +159,26 @@
             font-size: 4.5rem;
             margin-bottom: 1rem;
             line-height: 1.2;
+            min-height: 5.5rem;
+        }
+        .typing-text {
+            border-right: 3px solid #ff006e;
+            padding-right: 5px;
+            animation: typingCursor 0.8s infinite;
+        }
+        @keyframes typingCursor {
+            0%, 100% { border-color: transparent; }
+            50% { border-color: #ff006e; }
         }
         .hero-subtitle {
             font-size: 1.5rem;
             margin-bottom: 2rem;
             color: #b0b0b0;
+            opacity: 0;
+            animation: fadeInUp 1s forwards 2s;
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
         .cta {
             display: inline-block;
@@ -129,9 +191,26 @@
             font-size: 1.1rem;
             transition: all 0.3s;
             box-shadow: 0 10px 30px rgba(255,0,110,0.3);
+            opacity: 0;
+            animation: fadeInUp 1s forwards 2.5s;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .cta:hover::before {
+            left: 100%;
         }
         .cta:hover {
-            transform: translateY(-5px);
+            transform: translateY(-5px) scale(1.05);
             box-shadow: 0 20px 40px rgba(255,0,110,0.5);
         }
         /* Services */
@@ -147,6 +226,8 @@
             background: linear-gradient(45deg, #ff006e, #8338ec);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: translateY(30px);
         }
         .services-grid {
             display: grid;
@@ -162,6 +243,8 @@
             transition: all 0.4s;
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px);
         }
         .service-card::before {
             content: '';
@@ -189,6 +272,30 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 1.5rem;
         }
+        /* Stats Counter */
+        .stats {
+            padding: 80px 2rem;
+            background: rgba(255,0,110,0.05);
+            text-align: center;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .stat-item {
+            opacity: 0;
+        }
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
         /* About */
         .about {
             padding: 120px 2rem;
@@ -206,6 +313,8 @@
             font-size: 2.5rem;
             margin-bottom: 1.5rem;
             color: #ff006e;
+            opacity: 0;
+            transform: translateX(-30px);
         }
         /* Contact */
         .contact {
@@ -227,9 +336,11 @@
             border-radius: 15px;
             transition: all 0.3s;
             border: 1px solid rgba(255,0,110,0.2);
+            opacity: 0;
+            transform: scale(0.9);
         }
         .contact-item:hover {
-            transform: translateY(-10px);
+            transform: translateY(-10px) scale(1.05);
             background: rgba(255,0,110,0.1);
             border-color: #ff006e;
         }
@@ -244,12 +355,75 @@
             text-align: center;
             padding: 2rem;
             border-top: 1px solid rgba(255,0,110,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .footer-links {
+            margin-top: 1rem;
+        }
+        .footer-links a {
+            color: #b0b0b0;
+            margin: 0 1rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #ff006e;
+        }
+        /* Back to Top */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s;
+            z-index: 999;
+            box-shadow: 0 5px 20px rgba(255,0,110,0.3);
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            transform: translateY(-5px);
         }
         /* Responsive */
         @media (max-width: 768px) {
             .hero h1 { font-size: 3rem; }
             .about-content { grid-template-columns: 1fr; }
             .section-title { font-size: 2.5rem; }
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(10,10,10,0.98);
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: all 0.3s;
+            }
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            .menu-toggle {
+                display: block;
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
         }
         /* Scroll Progress */
         .scroll-progress {
@@ -262,31 +436,70 @@
             z-index: 10000;
             transition: width 0.1s;
         }
+        /* Floating Elements */
+        .floating {
+            position: absolute;
+            font-size: 1rem;
+            color: #ff006e;
+            opacity: 0.3;
+            animation: floatAround 20s infinite linear;
+        }
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, 100px) rotate(90deg); }
+            50% { transform: translate(200px, -50px) rotate(180deg); }
+            75% { transform: translate(-100px, 100px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <!-- Custom Cursor -->
+    <div class="cursor-effect"></div>
+    
+    <!-- Matrix Background -->
+    <canvas class="matrix-bg"></canvas>
+    
+    <!-- Scroll Progress -->
     <div class="scroll-progress"></div>
     
+    <!-- Back to Top Button -->
+    <a href="#home" class="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+    
+    <!-- Header -->
     <header>
         <nav>
             <div class="hk-logo" style="font-size: 2rem;">HK</div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
             <ul class="nav-links">
                 <li><a href="#home">होम</a></li>
                 <li><a href="#services">सेवाएँ</a></li>
+                <li><a href="#stats">आँकड़े</a></li>
                 <li><a href="#about">हमारे बारे में</a></li>
                 <li><a href="#contact">संपर्क</a></li>
             </ul>
         </nav>
     </header>
 
+    <!-- Hero Section -->
     <section id="home" class="hero">
+        <!-- Floating Elements -->
+        <div class="floating" style="top: 20%; left: 10%;"><i class="fas fa-shield-alt"></i></div>
+        <div class="floating" style="top: 30%; right: 15%;"><i class="fas fa-lock"></i></div>
+        <div class="floating" style="bottom: 40%; left: 20%;"><i class="fas fa-key"></i></div>
+        
         <div class="hero-content">
-            <h1>HK Cybersecurity</h1>
+            <h1><span class="typing-text"></span></h1>
             <p class="hero-subtitle">आपकी डिजिटल सुरक्षा हमारी प्राथमिकता।<br>प्रोफेशनल Penetration Testing, Vulnerability Assessment & Ethical Hacking Services</p>
             <a href="#contact" class="cta">अभी संपर्क करें <i class="fas fa-arrow-right"></i></a>
         </div>
     </section>
 
+    <!-- Services Section -->
     <section id="services" class="services">
         <h2 class="section-title">हमारी विशेषज्ञता</h2>
         <div class="services-grid">
@@ -323,6 +536,29 @@
         </div>
     </section>
 
+    <!-- Stats Section -->
+    <section id="stats" class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number" data-count="5">0</div>
+                <p>साल का अनुभव</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-count="150">0</div>
+                <p>सफल प्रोजेक्ट</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-count="99">0</div>
+                <p>ग्राहक संतुष्टि %</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-count="24">0</div>
+                <p>/7 सपोर्ट</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
     <section id="about" class="about">
         <div class="about-content">
             <div class="about-text">
@@ -331,16 +567,20 @@
                 <p>Instagram fake accounts report करने से लेकर enterprise level penetration testing तक - सभी services professional तरीके से provide करते हैं।</p>
                 <ul style="margin-top: 2rem; text-align: left; max-width: 400px;">
                     <li><i class="fas fa-check" style="color: #ff006e; margin-right: 10px;"></i>5+ साल का experience</li>
-                    <li><i class="fas fa-check" style="color: #ff006e; margin-right: 10px;"></i>100+ successful projects</li>
+                    <li><i class="fas fa-check" style="color: #ff006e; margin-right: 10px;"></i>150+ successful projects</li>
                     <li><i class="fas fa-check" style="color: #ff006e; margin-right: 10px;"></i>24/7 emergency support</li>
+                    <li><i class="fas fa-check" style="color: #ff006e; margin-right: 10px;"></i>Certified Ethical Hacker</li>
                 </ul>
             </div>
-            <div style="text-align: center;">
+            <div style="text-align: center; position: relative;">
                 <img src="https://via.placeholder.com/500x400/1a0033/8338ec?text=HK+Cybersecurity" alt="HK Cybersecurity" style="width: 100%; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+                <div class="floating" style="top: -20px; right: -20px;"><i class="fas fa-star"></i></div>
+                <div class="floating" style="bottom: -20px; left: -20px;"><i class="fas fa-certificate"></i></div>
             </div>
         </div>
     </section>
 
+    <!-- Contact Section -->
     <section id="contact" class="contact">
         <h2 class="section-title">संपर्क करें</h2>
         <div class="contact-grid">
@@ -350,7 +590,7 @@
                 </div>
                 <h3>ईमेल</h3>
                 <p><strong>hrk0245@gmail.com</strong></p>
-                <a href="mailto:hrk0245@gmail.com" style="color: #ff006e;">मेल भेजें</a>
+                <a href="mailto:hrk0245@gmail.com" class="contact-link">मेल भेजें</a>
             </div>
             <div class="contact-item">
                 <div class="contact-icon">
@@ -358,7 +598,7 @@
                 </div>
                 <h3>मोबाइल</h3>
                 <p><strong>+91 8302491727</strong></p>
-                <a href="tel:+918302491727" style="color: #ff006e;">कॉल करें</a>
+                <a href="tel:+918302491727" class="contact-link">कॉल करें</a>
             </div>
             <div class="contact-item">
                 <div class="contact-icon">
@@ -366,7 +606,7 @@
                 </div>
                 <h3>LinkedIn</h3>
                 <p>Hussain Khan</p>
-                <a href="https://www.linkedin.com/in/hussain-khan-62a830283" target="_blank" style="color: #ff006e;">प्रोफाइल देखें</a>
+                <a href="https://www.linkedin.com/in/hussain-khan-62a830283" target="_blank" class="contact-link">प्रोफाइल देखें</a>
             </div>
             <div class="contact-item">
                 <div class="contact-icon">
@@ -374,24 +614,186 @@
                 </div>
                 <h3>Telegram</h3>
                 <p>@hk_cyeber0245</p>
-                <a href="https://t.me/hk_cyeber0245" target="_blank" style="color: #ff006e;">मैसेज करें</a>
+                <a href="https://t.me/hk_cyeber0245" target="_blank" class="contact-link">मैसेज करें</a>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <p>&copy; 2026 <span class="hk-logo">HK Cybersecurity</span>. सभी अधिकार सुरक्षित। | Made with ❤️ for Cyber Security</p>
+        <div class="footer-links">
+            <a href="#privacy">गोपनीयता नीति</a>
+            <a href="#terms">नियम और शर्तें</a>
+            <a href="#disclaimer">अस्वीकरण</a>
+        </div>
     </footer>
 
     <script>
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor-effect');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('expand');
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('expand');
+        });
+        
+        document.querySelectorAll('a, button, .service-card, .contact-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('expand');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('expand');
+            });
+        });
+
+        // Matrix Rain Effect
+        const canvas = document.querySelector('.matrix-bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = "01ハンスタンヴァーテクサイバーセキュリティ";
+        const charArray = chars.split("");
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for(let i = 0; i < columns; i++) {
+            drops[i] = Math.floor(Math.random() * canvas.height);
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 50);
+        
+        // Typing Effect
+        const texts = [
+            "HK Cybersecurity",
+            "साइबर सुरक्षा विशेषज्ञ",
+            "Professional Ethical Hacker",
+            "डिजिटल सुरक्षा गारंटी"
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        const typingElement = document.querySelector('.typing-text');
+        
+        function typeWriter() {
+            if(charIndex < texts[textIndex].length) {
+                typingElement.innerHTML += texts[textIndex].charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriter, 100);
+            } else {
+                setTimeout(eraseText, 2000);
+            }
+        }
+        
+        function eraseText() {
+            if(charIndex > 0) {
+                typingElement.innerHTML = texts[textIndex].substring(0, charIndex - 1);
+                charIndex--;
+                setTimeout(eraseText, 50);
+            } else {
+                textIndex = (textIndex + 1) % texts.length;
+                setTimeout(typeWriter, 500);
+            }
+        }
+        
+        typeWriter();
+
+        // Scroll Animations
+        function checkScroll() {
+            const elements = document.querySelectorAll('.section-title, .service-card, .stat-item, .about-text h3, .contact-item');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if(elementTop < windowHeight - 100) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translate(0, 0) scale(1)';
+                    
+                    if(element.classList.contains('stat-item')) {
+                        const numberElement = element.querySelector('.stat-number');
+                        const finalNumber = parseInt(numberElement.getAttribute('data-count'));
+                        let currentNumber = 0;
+                        const increment = finalNumber / 100;
+                        
+                        const timer = setInterval(() => {
+                            currentNumber += increment;
+                            if(currentNumber >= finalNumber) {
+                                currentNumber = finalNumber;
+                                clearInterval(timer);
+                            }
+                            numberElement.textContent = Math.floor(currentNumber);
+                        }, 20);
+                    }
+                }
+            });
+            
+            // Back to Top Button
+            const backToTop = document.querySelector('.back-to-top');
+            if(window.scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        }
+        
+        window.addEventListener('scroll', checkScroll);
+        window.addEventListener('load', checkScroll);
+        
         // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu
+                    document.querySelector('.nav-links').classList.remove('active');
+                }
             });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if(window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
         });
 
         // Scroll progress bar
@@ -401,30 +803,43 @@
             progress.style.width = scrolled + '%';
         });
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(10,10,10,0.98)';
-            } else {
-                header.style.background = 'rgba(10,10,10,0.95)';
-            }
+        // Mobile menu toggle
+        document.querySelector('.menu-toggle').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('active');
         });
 
-        // Typing effect
-        const text = "HK Cybersecurity";
-        let i = 0;
-        const heroTitle = document.querySelector('.hero h1');
-        function typeWriter() {
-            if (i < text.length) {
-                heroTitle.innerHTML = text.slice(0, i+1) + "|";
-                i++;
-                setTimeout(typeWriter, 100);
-            } else {
-                heroTitle.innerHTML = text;
-            }
-        }
-        window.addEventListener('load', typeWriter);
+        // Window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Contact links styling
+        document.querySelectorAll('.contact-link').forEach(link => {
+            link.style.color = '#ff006e';
+            link.style.textDecoration = 'none';
+            link.style.fontWeight = '500';
+            link.style.marginTop = '10px';
+            link.style.display = 'inline-block';
+            link.style.transition = 'color 0.3s';
+            
+            link.addEventListener('mouseenter', () => {
+                link.style.color = '#8338ec';
+            });
+            
+            link.addEventListener('mouseleave', () => {
+                link.style.color = '#ff006e';
+            });
+        });
+
+        // Initial animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
     </script>
 </body>
-                  </html>
+</html>
